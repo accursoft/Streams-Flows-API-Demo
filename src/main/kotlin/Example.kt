@@ -3,7 +3,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.request.*
-import io.ktor.content.TextContent
+import io.ktor.content.*
 import io.ktor.html.*
 import io.ktor.http.ContentType
 import io.ktor.http.formUrlEncode
@@ -11,12 +11,23 @@ import io.ktor.request.*
 import io.ktor.routing.*
 import kotlinx.html.*
 
+fun HTML.template(block: BODY.() -> Unit) {
+    head {
+        link("/static/styles.css", "stylesheet", "text/css")
+    }
+    body {
+        block()
+    }
+}
+
 fun Application.main() {
     install(Routing) {
+        static("static") {
+           resource("styles.css")
+        }
         get("/") {
             call.respondHtml {
-                body {
-                    attributes["style"] = "text-align:center"
+                template {
                     h1 {
                         + "Streams Designer API Demo"
                     }
@@ -55,8 +66,7 @@ fun Application.main() {
             }.resources
 
             call.respondHtml {
-                body {
-                    attributes["style"] = "text-align:center"
+                template {
                     form("flows", method = FormMethod.post) {
                         hiddenInput {
                             name = "bearer"
@@ -98,13 +108,11 @@ fun Application.main() {
             }
 
             call.respondHtml {
-                body {
-                    attributes["style"] = "text-align:center"
+                template {
                     h2 {
                         + "Flows"
                     }
                     table {
-                        attributes["style"] = "margin:0 auto"
                         tr {
                             th {
                                 + "Flow"
