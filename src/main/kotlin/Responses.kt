@@ -6,3 +6,5 @@ data class Metadata(@SerializedName(value = "guid", alternate = ["id"]) val guid
 data class Entity(val name: String?, val description: String, val state: String?)
 data class Resource(val metadata: Metadata, val entity: Entity)
 data class Resources(val resources: List<Resource>)
+
+data class SessionData(val bearer: String)

@@ -9,6 +9,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.formUrlEncode
 import io.ktor.request.*
 import io.ktor.routing.*
+import io.ktor.sessions.*
 import kotlinx.html.*
 
 fun HTML.template(block: BODY.() -> Unit) {
@@ -22,11 +23,15 @@ fun HTML.template(block: BODY.() -> Unit) {
 }
 
 fun Application.main() {
+    install(Sessions) {
+        cookie<SessionData>("session")
+    }
     install(Routing) {
         static("static") {
            resource("styles.css")
         }
         get("/") {
+            call.sessions.clear<SessionData>()
             call.respondHtml {
                 template {
                     h1 {
@@ -62,6 +67,8 @@ fun Application.main() {
                             ContentType.Application.FormUrlEncoded
                 )
             }.access_token
+            call.sessions.set(SessionData(bearer))
+
             val projects = client.get<Resources>("https://ngp-projects-api.ng.bluemix.net/v2/projects") {
                 headers["Authorization"] = "Bearer $bearer"
             }.resources
@@ -69,10 +76,6 @@ fun Application.main() {
             call.respondHtml {
                 template {
                     form("flows", method = FormMethod.post) {
-                        hiddenInput {
-                            name = "bearer"
-                            value = bearer
-                        }
                         h2 {
                             + "Select Project"
                         }
@@ -92,9 +95,8 @@ fun Application.main() {
             }
         }
         post("flows") {
-            val params = call.receiveParameters()
-            val bearer = params["bearer"]!!
-            val project = params["project"]!!
+            val project = call.receiveParameters()["project"]!!
+            val bearer = call.sessions.get<SessionData>()!!.bearer
 
             val client = HttpClient(CIO) {
                 install(JsonFeature)
