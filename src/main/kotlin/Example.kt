@@ -14,6 +14,7 @@ import kotlinx.html.*
 fun HTML.template(block: BODY.() -> Unit) {
     head {
         link("/static/styles.css", "stylesheet", "text/css")
+        title("Streams Designer API Demo")
     }
     body {
         block()
