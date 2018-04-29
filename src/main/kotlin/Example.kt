@@ -1,12 +1,6 @@
 import io.ktor.application.*
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.request.*
 import io.ktor.content.*
 import io.ktor.html.*
-import io.ktor.http.ContentType
-import io.ktor.http.formUrlEncode
 import io.ktor.request.*
 import io.ktor.routing.*
 import io.ktor.sessions.*
@@ -54,24 +48,9 @@ fun Application.main() {
             }
         }
         post("projects") {
-            val client = HttpClient(CIO) {
-                install(JsonFeature)
-            }
-
-            val bearer = client.post<Tokens>("https://iam.ng.bluemix.net/oidc/token") {
-                body = TextContent(
-                            listOf(
-                                "grant_type" to "urn:ibm:params:oauth:grant-type:apikey",
-                                "apikey" to call.receiveParameters()["key"]
-                            ).formUrlEncode(),
-                            ContentType.Application.FormUrlEncoded
-                )
-            }.access_token
+            val bearer = getBearer(call.receiveParameters()["key"]!!)
             call.sessions.set(SessionData(bearer))
-
-            val projects = client.get<Resources>("https://ngp-projects-api.ng.bluemix.net/v2/projects") {
-                headers["Authorization"] = "Bearer $bearer"
-            }.resources
+            val projects = getProjects(bearer)
 
             call.respondHtml {
                 template {
@@ -86,7 +65,8 @@ fun Application.main() {
                                     value = it.metadata.guid
                                     label = it.entity.name!!
                                     title = it.entity.description
-                            } }
+                                }
+                            }
                         }
                         + " "
                         submitInput()
@@ -98,16 +78,8 @@ fun Application.main() {
             val project = call.receiveParameters()["project"]!!
             val bearer = call.sessions.get<SessionData>()!!.bearer
 
-            val client = HttpClient(CIO) {
-                install(JsonFeature)
-            }
-
-            val flows = client.get<Resources>("https://streaming-pipelines-api.mybluemix.net/v2/streams_flows?project_id=$project") {
-                headers["Authorization"] = "Bearer $bearer"
-            }.resources.map {
-                it to client.get<Resources>("https://streaming-pipelines-api.mybluemix.net/v2/streams_flows/${it.metadata.guid}/runs?project_id=$project") {
-                                headers["Authorization"] = "Bearer $bearer"
-                            }.resources[0].entity.state!!
+            val flows = getFlows(bearer, project).map {
+                it to getState(bearer, project, it.metadata.guid)
             }
 
             call.respondHtml {
@@ -124,7 +96,7 @@ fun Application.main() {
                                 + "Status"
                             }
                         }
-                        flows.map { (flow, state) ->
+                        for ((flow, state) in flows)
                             tr {
                                 td {
                                     a("https://dataplatform.ibm.com/streams/pipelines/${flow.metadata.guid}?projectid=$project") {
@@ -136,7 +108,6 @@ fun Application.main() {
                                     + state.capitalize()
                                 }
                             }
-                        }
                     }
                 }
             }
