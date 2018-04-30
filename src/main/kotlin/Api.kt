@@ -30,15 +30,15 @@ suspend fun getBearer(key: String) =
         }.access_token
 
 suspend fun getResources(bearer: String, endpoint: String) =
-        client.get<Resources>(endpoint) {
+        client.get<Resources>("https://api.apsportal.ibm.com/v2/$endpoint") {
             headers["Authorization"] = "Bearer $bearer"
         }.resources
 
 suspend fun getProjects(bearer: String) =
-        getResources(bearer, "https://ngp-projects-api.ng.bluemix.net/v2/projects")
+        getResources(bearer, "projects")
 
 suspend fun getFlows(bearer: String, project: String) =
-        getResources(bearer, "https://streaming-pipelines-api.mybluemix.net/v2/streams_flows?project_id=$project")
+        getResources(bearer, "streams_flows?project_id=$project")
 
 suspend fun getState(bearer: String, project: String, flow: String) =
-        getResources(bearer, "https://streaming-pipelines-api.mybluemix.net/v2/streams_flows/$flow/runs?project_id=$project").first().entity.state!!
+        getResources(bearer, "streams_flows/$flow/runs?project_id=$project").first().entity.state!!
