@@ -1,10 +1,13 @@
 import io.ktor.application.*
 import io.ktor.content.*
 import io.ktor.html.*
+import io.ktor.locations.*
 import io.ktor.request.*
 import io.ktor.routing.*
 import io.ktor.sessions.*
 import kotlinx.html.*
+
+@Location("flows") data class Flows(val project: String)
 
 fun HTML.template(block: BODY.() -> Unit) {
     head {
@@ -20,6 +23,7 @@ fun Application.main() {
     install(Sessions) {
         cookie<SessionData>("session")
     }
+    install(Locations)
     install(Routing) {
         static("static") {
            resource("styles.css")
@@ -54,7 +58,7 @@ fun Application.main() {
 
             call.respondHtml {
                 template {
-                    form("flows", method = FormMethod.post) {
+                    form("flows", method = FormMethod.get) {
                         h2 {
                             + "Select Project"
                         }
@@ -74,8 +78,8 @@ fun Application.main() {
                 }
             }
         }
-        post("flows") {
-            val project = call.receiveParameters()["project"]!!
+        get<Flows> {
+            val project = it.project
             val bearer = call.sessions.get<SessionData>()!!.bearer
 
             val flows = getFlows(bearer, project).map {
