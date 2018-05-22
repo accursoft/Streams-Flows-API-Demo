@@ -8,6 +8,7 @@ import io.ktor.sessions.*
 import kotlinx.html.*
 
 @Location("flows") data class Flows(val project: String)
+@Location("metrics") data class Metrics(val project: String, val flow: String)
 
 fun HTML.template(block: BODY.() -> Unit) {
     head {
@@ -109,9 +110,68 @@ fun Application.main() {
                                     }
                                 }
                                 td {
-                                    + state.capitalize()
+                                    if (state == "running")
+                                        a(locations.href(Metrics(project, flow.metadata.guid))) {
+                                            + state.capitalize()
+                                        }
+                                    else
+                                        + state.capitalize()
                                 }
                             }
+                    }
+                }
+            }
+        }
+        get<Metrics> {
+            val metrics = getMetrics(call.sessions.get<SessionData>()!!.bearer, it.project, it.flow)
+            call.respondHtml {
+                template {
+                    h2 {
+                        +"Metrics"
+                    }
+                    table {
+                        tr {
+                            th {
+                                + "Source"
+                            }
+                            th {
+                                + "Target"
+                            }
+                            th {
+                                + "Tuples Submitted"
+                            }
+                            th {
+                                + "Tuples Processed"
+                            }
+                            th {
+                                + "Tuples Dropped"
+                            }
+                            th {
+                                + "Exceptions Caught"
+                            }
+                        }
+                        for ((source, targets) in metrics)
+                            for ((target, metric) in targets)
+                                tr {
+                                    td {
+                                        + source
+                                    }
+                                    td {
+                                        + target
+                                    }
+                                    td {
+                                        + metric.n_tuples_submitted.toString()
+                                    }
+                                    td {
+                                        + metric.n_tuples_processed.toString()
+                                    }
+                                    td {
+                                        + metric.n_tuples_dropped.toString()
+                                    }
+                                    td {
+                                        + metric.n_exceptions_caught.toString()
+                                    }
+                                }
                     }
                 }
             }
