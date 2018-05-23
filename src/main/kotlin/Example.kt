@@ -6,6 +6,7 @@ import io.ktor.request.*
 import io.ktor.routing.*
 import io.ktor.sessions.*
 import kotlinx.html.*
+import java.util.*
 
 @Location("flows") data class Flows(val project: String)
 @Location("metrics") data class Metrics(val project: String, val flow: String)
@@ -151,7 +152,7 @@ fun Application.main() {
                             }
                         }
                         for ((source, targets) in metrics)
-                            for ((target, metric) in targets)
+                            for ((target, metrics) in targets)
                                 tr {
                                     td {
                                         + source
@@ -159,18 +160,13 @@ fun Application.main() {
                                     td {
                                         + target
                                     }
-                                    td {
-                                        + metric.n_tuples_submitted.toString()
-                                    }
-                                    td {
-                                        + metric.n_tuples_processed.toString()
-                                    }
-                                    td {
-                                        + metric.n_tuples_dropped.toString()
-                                    }
-                                    td {
-                                        + metric.n_exceptions_caught.toString()
-                                    }
+                                    for (metric in listOf("n_tuples_submitted", "n_tuples_processed", "n_tuples_dropped", "n_exceptions_caught"))
+                                        td {
+                                            metrics[metric]?.let {
+                                                title = Date(it.lastTimeRetrieved).toString()
+                                                + it.value
+                                            }
+                                        }
                                 }
                     }
                 }

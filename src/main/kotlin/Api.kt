@@ -9,13 +9,10 @@ import io.ktor.http.formUrlEncode
 
 data class Tokens(val access_token: String)
 
-data class Metric(val n_tuples_submitted: Int,
-                   val n_tuples_processed: Int,
-                   val n_tuples_dropped: Int,
-                   val n_exceptions_caught: Int)
+data class Metric(val value: String, val lastTimeRetrieved: Long)
 
 data class Metadata(@SerializedName(value = "guid", alternate = ["id"]) val guid: String,
-                    val metrics: Map<String, Map<String, Metric>>?)
+                    val metrics: Map<String, Map<String, Map<String, Metric>>>?)
 data class Entity(val name: String?, val description: String, val state: String?)
 data class Resource(val metadata: Metadata, val entity: Entity)
 data class Resources(val resources: List<Resource>)
