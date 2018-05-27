@@ -1,6 +1,11 @@
 body {
-    text-align: center
+    text-align: center;
+    font-family: sans-serif;
 }
 table {
-    margin: 0 auto
+    margin: 0 auto;
+    border-collapse: collapse;
+}
+td, th {
+    border: solid;
 }
