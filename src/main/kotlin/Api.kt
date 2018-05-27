@@ -9,7 +9,7 @@ import io.ktor.http.formUrlEncode
 
 data class Tokens(val access_token: String)
 
-data class Metric(val value: String, val lastTimeRetrieved: Long)
+data class Metric(val value: Int, val lastTimeRetrieved: Long)
 
 data class Metadata(@SerializedName(value = "guid", alternate = ["id"]) val guid: String,
                     val metrics: Map<String, Map<String, Map<String, Metric>>>?)

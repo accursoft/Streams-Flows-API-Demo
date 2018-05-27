@@ -5,8 +5,8 @@ import io.ktor.locations.*
 import io.ktor.request.*
 import io.ktor.routing.*
 import io.ktor.sessions.*
+import kotlinx.coroutines.experimental.delay
 import kotlinx.html.*
-import java.util.*
 
 @Location("flows") data class Flows(val project: String)
 @Location("metrics") data class Metrics(val project: String, val flow: String)
@@ -124,7 +124,9 @@ fun Application.main() {
             }
         }
         get<Metrics> {
-            val metrics = getMetrics(call.sessions.get<SessionData>()!!.bearer, it.project, it.flow)
+            val metrics1 = getMetrics(call.sessions.get<SessionData>()!!.bearer, it.project, it.flow)
+            delay(1000)
+            val metrics2 = getMetrics(call.sessions.get<SessionData>()!!.bearer, it.project, it.flow)
             call.respondHtml {
                 template {
                     h2 {
@@ -151,8 +153,8 @@ fun Application.main() {
                                 + "Exceptions Caught"
                             }
                         }
-                        for ((source, targets) in metrics)
-                            for ((target, metrics) in targets)
+                        for ((source, targets) in metrics1)
+                            for ((target, metrics1) in targets)
                                 tr {
                                     td {
                                         + source
@@ -162,12 +164,16 @@ fun Application.main() {
                                     }
                                     for (metric in listOf("n_tuples_submitted", "n_tuples_processed", "n_tuples_dropped", "n_exceptions_caught"))
                                         td {
-                                            metrics[metric]?.let {
-                                                title = Date(it.lastTimeRetrieved).toString()
-                                                + it.value
+                                            metrics1[metric]?.let { metric1 ->
+                                                val metric2 = metrics2[source]!![target]!![metric]!!
+                                                title = metric2.value.toString()
+                                                + ((metric2.value - metric1.value).toFloat() / (metric2.lastTimeRetrieved - metric1.lastTimeRetrieved) * 1000).toInt().toString()
                                             }
                                         }
                                 }
+                    }
+                    p {
+                        +"Metrics are per second, hover for total."
                     }
                 }
             }
