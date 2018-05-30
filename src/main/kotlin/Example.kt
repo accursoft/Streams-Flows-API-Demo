@@ -43,7 +43,7 @@ fun Application.main() {
                                 + "API Key"
                             }
                             br
-                            textInput {
+                            passwordInput {
                                 name = "key"
                             }
                         }
