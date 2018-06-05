@@ -33,3 +33,7 @@ dependencies {
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
+
+task buildDocker(type: Exec, dependsOn: installDist) {
+    commandLine 'docker', 'build', '-t=api', '-f=Dockerfile', 'build/install/api-example'
+}
