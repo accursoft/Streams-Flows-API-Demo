@@ -35,5 +35,9 @@ compileKotlin {
 }
 
 task buildDocker(type: Exec, dependsOn: installDist) {
-    commandLine 'docker', 'build', '-t=streams-designer-api', '-f=Dockerfile', 'build/install/api-example'
+    commandLine 'docker', 'build', '-t=accursoft/streams-designer-api:latest', '-f=Dockerfile', 'build/install/api-example'
+}
+
+task publishDocker(type: Exec, dependsOn: buildDocker) {
+    commandLine 'docker', 'push', 'accursoft/streams-designer-api'
 }
