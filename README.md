@@ -1,6 +1,6 @@
 # Streams Designer API Demo
 
-Demonstration of the [Streams Designer](https://www.ibm.com/cloud/streams-designer) [REST API](https://streaming-pipelines-api.mybluemix.net/v2/streams_flows/docs/swagger/).
+Demonstration of the [Streams Designer](https://www.ibm.com/cloud/streams-designer) [REST API](https://api.apsportal.ibm.com/v2/streams_flows/docs/swagger/).
 
 JDK 8+ required. `gradlew run`, then point your browser to http://localhost:8080/.
 
