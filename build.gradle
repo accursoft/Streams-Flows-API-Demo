@@ -38,6 +38,10 @@ task buildDocker(type: Exec, dependsOn: installDist) {
     commandLine 'docker', 'build', '-t=accursoft/streams-designer-api:latest', '-f=Dockerfile', 'build/install/api-example'
 }
 
-task publishDocker(type: Exec, dependsOn: buildDocker) {
+task testDocker(type: Exec, dependsOn: buildDocker) {
+    commandLine './testDocker.sh'
+}
+
+task publishDocker(type: Exec, dependsOn: testDocker) {
     commandLine 'docker', 'push', 'accursoft/streams-designer-api'
 }
