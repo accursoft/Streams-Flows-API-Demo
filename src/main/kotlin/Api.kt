@@ -1,6 +1,5 @@
 import com.google.gson.annotations.SerializedName
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.request.*
 import io.ktor.content.TextContent
@@ -19,7 +18,7 @@ data class Resources(val resources: List<Resource>)
 
 data class SessionData(val bearer: String)
 
-val client = HttpClient(CIO) { install(JsonFeature) }
+val client = HttpClient() { install(JsonFeature) }
 
 suspend fun getBearer(key: String) =
         client.post<Tokens>("https://iam.ng.bluemix.net/oidc/token") {
