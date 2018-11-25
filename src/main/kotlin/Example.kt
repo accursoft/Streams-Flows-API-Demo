@@ -1,11 +1,11 @@
 import io.ktor.application.*
-import io.ktor.content.*
+import io.ktor.http.content.*
 import io.ktor.html.*
 import io.ktor.locations.*
 import io.ktor.request.*
 import io.ktor.routing.*
 import io.ktor.sessions.*
-import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.delay
 import kotlinx.html.*
 
 @Location("flows") data class Flows(val project: String)
@@ -84,8 +84,8 @@ fun Application.main() {
             val project = it.project
             val bearer = call.sessions.get<SessionData>()!!.bearer
 
-            val flows = getFlows(bearer, project).map {
-                it to getState(bearer, project, it.metadata.guid)
+            val flows = getFlows(bearer, project).associateWith {
+                getState(bearer, project, it.metadata.guid)
             }
 
             call.respondHtml {

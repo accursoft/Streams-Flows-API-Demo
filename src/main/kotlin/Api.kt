@@ -18,7 +18,7 @@ data class Resources(val resources: List<Resource>)
 
 data class SessionData(val bearer: String)
 
-val client = HttpClient() { install(JsonFeature) }
+val client = HttpClient { install(JsonFeature) }
 
 suspend fun getBearer(key: String) =
         client.post<Tokens>("https://iam.ng.bluemix.net/oidc/token") {
