@@ -1,6 +1,6 @@
-# Streams Designer API Demo
+# Streams Flows API Demo
 
-Demonstration of the [Streams Designer](https://www.ibm.com/cloud/streams-designer) [REST API](https://api.apsportal.ibm.com/v2/streams_flows/docs/swagger/).
+Demonstration of the [Streams Flows](https://dataplatform.cloud.ibm.com/docs/content/streaming-pipelines/overview-streaming-pipelines.html) [REST API](https://console.bluemix.net/apidocs/watson-data-api#stream-flows).
 
 JDK 8+ required. `gradlew run`, then point your browser to http://localhost:8080/.
 
