@@ -32,7 +32,7 @@ suspend fun getBearer(key: String) =
         }.access_token
 
 suspend inline fun <reified T> getData(bearer: String, endpoint: String) =
-        client.get<T>("https://api.apsportal.ibm.com/v2/$endpoint") {
+        client.get<T>("https://api.dataplatform.cloud.ibm.com/v2/$endpoint") {
             headers["Authorization"] = "Bearer $bearer"
         }
 
