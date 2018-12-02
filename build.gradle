@@ -1,6 +1,7 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.3.10'
     id 'application'
+    id 'com.palantir.docker' version '0.20.1'
 }
 
 mainClassName = 'io.ktor.server.netty.EngineMain'
@@ -26,17 +27,13 @@ compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-task buildDocker(type: Exec, dependsOn: installDist) {
-    group 'docker'
-    commandLine 'docker', 'build', '-t=accursoft/streams-designer-api:latest', '-f=Dockerfile', 'build/install/api-example'
+docker {
+    name 'accursoft/streams-designer-api'
+    tags 'latest'
+    files tasks.installDist.outputs
 }
 
-task testDocker(type: Exec, dependsOn: buildDocker) {
+task dockerTest(type: Exec, dependsOn: "docker") {
     group 'docker'
     commandLine './testDocker.sh'
-}
-
-task publishDocker(type: Exec, dependsOn: testDocker) {
-    group 'docker'
-    commandLine 'docker', 'push', 'accursoft/streams-designer-api'
 }
