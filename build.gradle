@@ -28,7 +28,7 @@ compileKotlin {
 }
 
 docker {
-    name 'accursoft/streams-designer-api'
+    name 'accursoft/streams-flows-api'
     tags 'latest'
     files tasks.installDist.outputs
 }

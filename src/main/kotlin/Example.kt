@@ -35,7 +35,7 @@ fun Application.main() {
             call.respondHtml {
                 template {
                     h1 {
-                        + "Streams Designer API Demo"
+                        + "Streams Flows API Demo"
                     }
                     form("projects", method = FormMethod.post) {
                         label {
