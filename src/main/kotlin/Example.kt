@@ -39,7 +39,7 @@ fun Application.main() {
                     }
                     form("projects", method = FormMethod.post) {
                         label {
-                            a("https://console.bluemix.net/iam/#/apikeys") {
+                            a("https://cloud.ibm.com/iam/apikeys") {
                                 + "API Key"
                             }
                             br
